@@ -1,7 +1,10 @@
 from django.urls import path
-from .views import CreatePostsView, GetPostsView
+from . import views
 
 
-urlspatters = [
-    path("posts/", GetPostsView.as_view(), name="get-posts")
+urlpatterns = [
+    path("", views.main_page, name="home"),
+    path("articles", views.get_articles, name="dontknow"),
+    path("users", views.get_users, name="users"),
+    path("create/articles", views.create_articles, name="createarticles")
 ]

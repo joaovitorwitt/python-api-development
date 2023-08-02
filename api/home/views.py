@@ -4,26 +4,48 @@ from rest_framework import permissions, status
 from home.serializers import UserSerializer, GroupSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+
+@api_view(["GET"])
+def main_page(request):
+    info = {"this is the main page"}
+    return Response(info)
 
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint that allows groups to be viewed or edited.
-    """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+@api_view(["GET"])
+def get_articles(request):
+    data = [
+        {
+            "title": "O que houve com Sr Miles?",
+            "description": "CONTO, Evento Inicial",
+            "content" : "lorem ipsum....."
+        },
+        {
+            "title": "Violeta Waldemir",
+            "description": "another random description",
+            "content" : "lorem ipsudasdasdasd sda sd"
+        },
+        {
+            "title": "Eles encontraram o corpo?",
+            "description": "o que se sabe",
+            "content" : "lorem ipsum.....dasdasdadasdads"
+        },
+            
+    ]
+    return Response(data)
 
 
-class GetPostsView(APIView):
-    def get(self, request, format=None):
-        return Response({"posts": "here are the posts"})
+@api_view(["POST"])
+def create_articles(request):
+    payload = request.data
+    print(payload)
+    return Response({"article successfully created"})
+
+
+@api_view(["GET"])
+def get_users(request):
+    users = ["John Doe", "Mary Smith"]
+    return Response(users)
+
