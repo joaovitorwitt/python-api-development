@@ -5,7 +5,40 @@ from home.serializers import UserSerializer, GroupSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from .models import Article
 
+
+
+##################################
+"""
+    API basic CRUD operations
+"""
+
+@api_view(['GET'])
+def get(request):
+    return Response("information retrieved")
+
+
+@api_view(['DELETE'])
+def delete(request):
+    return Response("Information deleted")
+
+
+@api_view(['POST'])
+def create(request):
+    information = request.data
+    return Response(f"information created: {information}")
+
+
+@api_view(['PUT'])
+def update(request):
+    information = request.data
+    return Response(f"information updated: {information}")
+
+"""
+    End of API CRUD operations
+"""
+#######################################
 
 
 @api_view(["GET"])
@@ -39,9 +72,21 @@ def get_articles(request):
 
 @api_view(["POST"])
 def create_articles(request):
-    payload = request.data
-    print(payload)
-    return Response({"article successfully created"})
+    try:
+        article_data = Article.model_validate(request.data)
+    except:
+        return Response({"error": "something went wrong, please check the fields"})
+    print(article_data)
+
+    return Response({"article successfully created" : 
+                     {f"title: {article_data.title}",
+                      f"description: {article_data.description}",
+                    f"content: {article_data.content}",
+                    f"categories: {article_data.category}",
+                    f"publised: {article_data.published}"
+                      }})
+
+
 
 
 @api_view(["GET"])
