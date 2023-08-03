@@ -78,13 +78,7 @@ def create_articles(request):
         return Response({"error": "something went wrong, please check the fields"})
     print(article_data)
 
-    return Response({"article successfully created" : 
-                     {f"title: {article_data.title}",
-                      f"description: {article_data.description}",
-                    f"content: {article_data.content}",
-                    f"categories: {article_data.category}",
-                    f"publised: {article_data.published}"
-                      }})
+    return Response({f"article successfully created" : article_data.model_dump()})
 
 
 

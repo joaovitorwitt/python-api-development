@@ -1,6 +1,6 @@
 from django.db import models
 from pydantic import BaseModel
-
+from typing import Optional
 
 
 # Create your models here.
@@ -13,6 +13,8 @@ class Article(BaseModel):
     description : str
     content : str
     category : list
+    author : str
     # if the user does not provide anything it will evaluate to True (default)
     published: bool = True
     # create an optional
+    rating: Optional[int] = None
