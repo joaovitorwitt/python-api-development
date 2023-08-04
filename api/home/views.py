@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User, Group
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework import permissions, status
 from home.serializers import UserSerializer, GroupSerializer
@@ -6,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Article
-
-
+import json
+import os
 
 ##################################
 """
@@ -49,25 +50,16 @@ def main_page(request):
 
 @api_view(["GET"])
 def get_articles(request):
-    data = [
-        {
-            "title": "O que houve com Sr Miles?",
-            "description": "CONTO, Evento Inicial",
-            "content" : "lorem ipsum....."
-        },
-        {
-            "title": "Violeta Waldemir",
-            "description": "another random description",
-            "content" : "lorem ipsudasdasdasd sda sd"
-        },
-        {
-            "title": "Eles encontraram o corpo?",
-            "description": "o que se sabe",
-            "content" : "lorem ipsum.....dasdasdadasdads"
-        },
-            
-    ]
-    return Response(data)
+    directory = os.getcwd()
+    filename = "articles.json"
+
+    filepath = os.path.join(directory, filename)
+
+    with open(filepath, "r") as file:
+        articles_data = json.load(file)
+
+    return Response({"data": articles_data})
+
 
 
 @api_view(["POST"])
@@ -76,10 +68,29 @@ def create_articles(request):
         article_data = Article.model_validate(request.data)
     except:
         return Response({"error": "something went wrong, please check the fields"})
-    print(article_data)
+    
+    # Get the current working directory
+    current_directory = os.getcwd()
 
-    return Response({f"article successfully created" : article_data.model_dump()})
+    filename = "articles.json"
+    filepath = os.path.join(current_directory, filename)
 
+    # Check if the file exists, and if not, create an empty list to hold the articles
+    if not os.path.exists(filepath):
+        article_list = []
+    else:
+        # If the file exists, load the existing articles from the file
+        with open(filepath, "r") as file:
+            article_list = json.load(file)
+
+    # Append the new article_data to the list of articles
+    article_list.append(article_data.__dict__)
+
+    # Save the updated list of articles to the JSON file
+    with open(filepath, "w") as file:
+        json.dump(article_list, file, indent=4)
+
+    return Response({"message": "article successfully created", "article_data": article_data.model_dump()})
 
 
 
