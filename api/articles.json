@@ -1,25 +1,29 @@
 [
     {
-        "title": "o que houve com Sr. Miles",
-        "description": "Sr. Miles nunca mais foi visto apos aquele reuniao",
-        "content": "Muitos anos atras, Sr Miles estava presente...",
+        "id": 1,
+        "title": "O que houve com Sr. Miles?",
+        "description": "CONTO, Evento inicial",
+        "content": "Sr. Miles desapareceu na noite de...",
         "category": [
-            "Mistery",
+            "mistery",
+            "drama",
             "suspense"
         ],
-        "author": "Olivia",
+        "author": "Chris Redfield",
         "published": true,
         "rating": null
     },
     {
-        "title": "o que houve com Sr. Miles",
-        "description": "Sr. Miles nunca mais foi visto apos aquele reuniao",
-        "content": "Muitos anos atras, Sr Miles estava presente...",
+        "id": 2,
+        "title": "Telekinesis",
+        "description": "i can see the future",
+        "content": "ft. SZA, Future",
         "category": [
-            "Mistery",
+            "travis",
+            "scott",
             "suspense"
         ],
-        "author": "Olivia",
+        "author": "James Webb",
         "published": true,
         "rating": null
     }

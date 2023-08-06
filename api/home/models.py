@@ -9,6 +9,7 @@ from typing import Optional
 # model for the articles
 # this will represent what the article will look like
 class Article(BaseModel):
+    id: int
     title : str
     description : str
     content : str
