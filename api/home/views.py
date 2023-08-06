@@ -121,3 +121,40 @@ def delete_articles(request, id):
 
     except Exception as e:
         return JsonResponse({"message": str(e)})
+    
+
+"""
+    update articles based on the ID
+    url: update/articles/{id}
+"""
+@api_view(["PUT"])
+def update_articles(request, id):
+    try:
+        current_directory = os.getcwd()
+        filename = "articles.json"
+        filepath = os.path.join(current_directory, filename)
+
+        with open(filepath, "r") as file:
+            articles = json.load(file)
+
+        # i retrieved from the db the article that will be updated
+        desired_article = [article for article in articles if article["id"] == int(id)]
+
+        print(desired_article[0]["title"])
+        # got the updated info for the new article
+        article_data = Article.model_validate(request.data)
+        print(article_data.__dict__["title"])
+
+        desired_article[0]["title"] = article_data.__dict__["title"]
+        desired_article[0]["description"] = article_data.__dict__["description"]
+        desired_article[0]["content"] = article_data.__dict__["content"]
+        desired_article[0]["author"] = article_data.__dict__["author"]
+        desired_article[0]["category"] = article_data.__dict__["category"]
+        desired_article[0]["published"] =article_data.__dict__["published"]
+
+        # after, read the json file
+        
+    
+        return Response({"message": "okay"})
+    except:
+        return Response({"message": "something went wrong"})
