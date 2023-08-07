@@ -15,15 +15,14 @@
     },
     {
         "id": 2,
-        "title": "Telekinesis",
-        "description": "i can see the future",
-        "content": "ft. SZA, Future",
+        "title": "dsadsadas",
+        "description": "updatdsad",
+        "content": "updated content",
         "category": [
-            "travis",
-            "scott",
-            "suspense"
+            "up1",
+            "up2"
         ],
-        "author": "James Webb",
+        "author": "updated author",
         "published": true,
         "rating": null
     }

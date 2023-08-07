@@ -137,23 +137,25 @@ def update_articles(request, id):
         with open(filepath, "r") as file:
             articles = json.load(file)
 
-        # i retrieved from the db the article that will be updated
-        desired_article = [article for article in articles if article["id"] == int(id)]
+        # retrieved from the json file the article that will be updated
+        desired_article = next((article for article in articles if article["id"] == int(id)), None)
 
-        print(desired_article[0]["title"])
-        # got the updated info for the new article
+        print(desired_article)
+
+        # data that the user typed for the update
         article_data = Article.model_validate(request.data)
-        print(article_data.__dict__["title"])
 
-        desired_article[0]["title"] = article_data.__dict__["title"]
-        desired_article[0]["description"] = article_data.__dict__["description"]
-        desired_article[0]["content"] = article_data.__dict__["content"]
-        desired_article[0]["author"] = article_data.__dict__["author"]
-        desired_article[0]["category"] = article_data.__dict__["category"]
-        desired_article[0]["published"] =article_data.__dict__["published"]
+        desired_article["title"] = article_data.title
+        desired_article["description"] = article_data.description
+        desired_article["content"] = article_data.content
+        desired_article["author"] = article_data.author
+        desired_article["category"] = article_data.category
+        desired_article["published"] = article_data.published
 
-        # after, read the json file
-        
+        print(desired_article)
+
+        with open(filepath, "w") as file:
+            json.dump(articles, file, indent=4)
     
         return Response({"message": "okay"})
     except:
