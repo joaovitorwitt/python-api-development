@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+import time
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -75,12 +76,29 @@ WSGI_APPLICATION = 'api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+while True:
+    try:
+        db_password = os.environ.get('DATABASE_PASSWORD')
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'Tundra',
+                'USER' : 'postgresql',
+                'PASSWORD': db_password, 
+                'HOST': 'localhost',
+                'PORT' : '5432'
+            }
+        }
+        print("Serving connection....")
+        print("Connection was successful")
+        break
+
+    except Exception as error:
+        print("Serving connection....")
+        print("Connection failed")
+        time.sleep(7)
+
 
 
 # Password validation
