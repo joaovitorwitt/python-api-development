@@ -7,12 +7,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import Article
+from .serializers import ArticleSerializer
 import json
 import os
 import random
 
 
-# TODO - make an APi request to get the latest article
+# TODO - make an API request to get the latest article
 
 # TODO - make an API request to get the promoted article
 
@@ -22,20 +23,18 @@ def main_page(request):
     info = {"this is the main page"}
     return Response(info)
 
-"""
 
+"""
+    return all the articles on the database
+    url: get/articles
 """
 @api_view(["GET"])
 def get_articles(request):
-    directory = os.getcwd()
-    filename = "articles.json"
+    articles = Article.objects.all()
+    serializer = ArticleSerializer(articles, many=True)
+    print(articles)
 
-    filepath = os.path.join(directory, filename)
-
-    with open(filepath, "r") as file:
-        articles_data = json.load(file)
-
-    return Response({"data": articles_data})
+    return Response({"data" : serializer.data})
 
 
 
@@ -46,19 +45,11 @@ def get_articles(request):
 @api_view(["GET"])
 def get_article(request, id):
     try:
-        directory = os.getcwd()
-        filename = "articles.json"
-        filepath = os.path.join(directory, filename)
+        article = Article.objects.get(id=id)
+        serializer = ArticleSerializer(article)
 
-        with open(filepath, "r") as file:
-            articles = json.load(file)
-
-        for article in articles:
-            if article["id"] == int(id):
-                return Response({"article": f"here is the article: {article}"})
+        return Response({"data": serializer.data})
         
-        raise Exception("Article not found")
-    
     except Exception as e:
         return Response({"error" : f"{e}"})
 
@@ -70,27 +61,17 @@ def get_article(request, id):
 @api_view(["POST"])
 def create_articles(request):
     try:
-        article_data = Article.model_validate(request.data)
+        serializer = ArticleSerializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message" : "article successfully created"})
+        else:
+            return Response({"message" : serializer.error_messages})
     except:
         return Response({"error": "something went wrong, please check the fields"})
     
-    current_directory = os.getcwd()
-
-    filename = "articles.json"
-    filepath = os.path.join(current_directory, filename)
-
-    if not os.path.exists(filepath):
-        article_list = []
-    else:
-        with open(filepath, "r") as file:
-            article_list = json.load(file)
-
-    article_list.append(article_data.__dict__)
-
-    with open(filepath, "w") as file:
-        json.dump(article_list, file, indent=4)
-
-    return Response({"message": "article successfully created", "article_data": article_data.model_dump()})
+   
 
 
 """
@@ -100,24 +81,11 @@ def create_articles(request):
 @api_view(["DELETE"])
 def delete_articles(request, id):
     try:
-        current_directory = os.getcwd()
-        filename = "articles.json"
-        filepath = os.path.join(current_directory, filename)
+        desired_article = Article.objects.get(id=id)
 
-        with open(filepath, "r") as file:
-            articles = json.load(file)
+        desired_article.delete()
+        return Response({"data": "article deleted successfully"})
 
-        # creates a new list with the articles that do not have the id passed as parameter
-        updated_articles = [article for article in articles if article["id"] != int(id)]
-
-        if len(updated_articles) == len(articles):
-            raise Exception("Article not found")
-
-        # write the new file with the updated_articles
-        with open(filepath, "w") as file:
-            json.dump(updated_articles, file, indent=4)
-
-        return JsonResponse({"message": "Article successfully deleted"})
 
     except Exception as e:
         return JsonResponse({"message": str(e)})
@@ -130,33 +98,19 @@ def delete_articles(request, id):
 @api_view(["PUT"])
 def update_articles(request, id):
     try:
-        current_directory = os.getcwd()
-        filename = "articles.json"
-        filepath = os.path.join(current_directory, filename)
+        # Get the article that the user wants to update
+        article_for_update = Article.objects.get(id=id)
 
-        with open(filepath, "r") as file:
-            articles = json.load(file)
+        # Update the attributes of the retrieved article
+        article_for_update.title = request.data["title"]
+        article_for_update.description = request.data["description"]
+        article_for_update.content = request.data["content"]
+        article_for_update.author = request.data["author"]
+        article_for_update.published = request.data["published"]
 
-        # retrieved from the json file the article that will be updated
-        desired_article = next((article for article in articles if article["id"] == int(id)), None)
+        # Save the updated article to the database
+        article_for_update.save()
 
-        print(desired_article)
-
-        # data that the user typed for the update
-        article_data = Article.model_validate(request.data)
-
-        desired_article["title"] = article_data.title
-        desired_article["description"] = article_data.description
-        desired_article["content"] = article_data.content
-        desired_article["author"] = article_data.author
-        desired_article["category"] = article_data.category
-        desired_article["published"] = article_data.published
-
-        print(desired_article)
-
-        with open(filepath, "w") as file:
-            json.dump(articles, file, indent=4)
-    
-        return Response({"message": "okay"})
-    except:
-        return Response({"message": "something went wrong"})
+        return Response({"message": "article successfully updated"})
+    except Exception as e:
+        return Response({"data": f"{e}"})

@@ -75,16 +75,20 @@ WSGI_APPLICATION = 'api.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+db_password = os.environ.get('DATABASE_PASSWORD')
+
+if db_password is None:
+    print("ERROR: database password environment variable not configured")
+    exit()
 
 while True:
     try:
-        db_password = os.environ.get('DATABASE_PASSWORD')
 
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'Tundra',
-                'USER' : 'postgresql',
+                'USER' : 'postgres',
                 'PASSWORD': db_password, 
                 'HOST': 'localhost',
                 'PORT' : '5432'
