@@ -26,19 +26,70 @@ def main_page(request):
     return Response(info)
 
 
-#######################################################
+######################################################################
 # API endpoints for dealing with authetication (/login, /register)
-#######################################################
-
+######################################################################
 
 """
-    endpoint for registering a new user
-    url: /register
+    User Registration Endpoint
+    --------------------------
+
+    This endpoint allows users to register and create a new account.
+
+    URL: /register
+    Method: POST
+
+    Parameters (POST data):
+    - username (string, required): The desired username for the new user.
+    - email (string, required): The email address of the new user.
+    - password (string, required): The password for the new account.
+
+    Responses:
+    - 201 Created: User registration successful.
+        {
+            "message": "User successfully registered",
+            "token": "<JWT_TOKEN>"
+        }
+    - 400 Bad Request: Invalid input or missing required fields.
+        {
+            "serializer error": {
+                "field_name": ["error_message"]
+            }
+        }
+    - 500 Internal Server Error: An error occurred during registration.
+        {
+            "error message": "Internal server error details"
+        }
+
+    Notes:
+    - The password provided will be securely hashed before being stored.
+    - Upon successful registration, a JSON Web Token (JWT) will be returned in the response.
+      This token can be used for subsequent authentication and authorization.
+    - In case of an invalid request, the response will provide details about the validation errors.
+    - If an error occurs during registration, the response will contain an error message.
+
+    Example Usage:
+    --------------
+    ```
+    POST /register
+    {
+        "username": "new_user",
+        "email": "new_user@example.com",
+        "password": "secretpassword"
+    }
+    ```
 """
 @api_view(['POST'])
 def register_user(request):
     try:
         serializer = UserSerializer(data=request.data)
+
+        email = request.data['email']
+
+        # Check if a user with the given email already exists
+        if User.objects.filter(email=email).exists():
+            return Response({"message": "An account with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
         if serializer.is_valid():
             hashed_password = hash_password(serializer.validated_data['password'])
             serializer.validated_data["password"] = hashed_password
@@ -59,9 +110,13 @@ def register_user(request):
 @authentication_classes([BasicAuthentication, SessionAuthentication])
 @permission_classes([IsAuthenticated])
 def login(request):
-    return Response({"message": "done for now"})
-
-
+    try:
+        username = request.data["username"]
+        user = User.objects.get(username=username)   
+        user_serializer = UserSerializer(user).data     
+        return Response({"message": user_serializer})
+    except Exception as e:
+        return Response({"error" : f"{e}"})
 
 
 #######################################################
