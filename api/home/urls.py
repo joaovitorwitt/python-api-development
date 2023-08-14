@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView)
 
 urlpatterns = [
     path("", views.main_page, name="home"),
@@ -15,7 +15,10 @@ urlpatterns = [
     path("delete/user/<int:id>", views.delete_user, name="deleteuser"),
     path("update/user/<int:id>", views.update_user, name="updateuser"),
     path("login", views.login, name="login"),
-    path("register", views.register_user, name="register")
+    path("register", views.register_user, name="register"),
+    path("get/endpoints", views.list_endpoints, name="list-endpoints"),
+    path("api/token", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh", TokenRefreshView.as_view(), name="token_refresh")
 ]
 
 # TODO - create /login route (username + password) ===> if credentials are valid ==> create JWT token

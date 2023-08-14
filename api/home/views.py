@@ -19,16 +19,28 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 
 # TODO - make an API request to get the promoted article
 
-
 @api_view(["GET"])
 def main_page(request):
     info = {"this is the main page"}
     return Response(info)
 
 
-######################################################################
-# API endpoints for dealing with authetication (/login, /register)
-######################################################################
+
+"""
+    List API Endpoints
+    --------------------------
+
+    This endpoint lists all the endpoints
+
+    URL: get/endpoints
+    Method: GET
+
+"""
+@api_view(['GET'])
+def list_endpoints(request):
+    endpoints = ['dont know']
+    return Response(endpoints)
+
 
 """
     User Registration Endpoint
